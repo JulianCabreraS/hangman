@@ -1,6 +1,6 @@
 defmodule TextClient.Impl.Player do
   @typep game :: Hangman.game()
-  @typep tally :: Hangman.tally()
+  @typep tally :: Hangman.Type.tally()
   @typep state :: {game, tally}
 
   @spec start() :: :ok
@@ -11,7 +11,6 @@ defmodule TextClient.Impl.Player do
   end
 
   @spec interact(state) :: :ok
-
   def interact({_game, _tally = %{game_state: :won}}) do
     IO.puts("Congratulations! You won!")
   end
@@ -20,12 +19,13 @@ defmodule TextClient.Impl.Player do
     IO.puts("Sorry, you lost..the word was #{tally.letters |> Enum.join()}")
   end
 
-  def interact({_game, tally}) do
+  def interact({game, tally}) do
     # feedback
     IO.puts(feedback_for(tally))
-    # display current word
-    # get next guess
-    # make move
+    IO.puts(current_word(tally))
+
+    Hangman.make_move(game, get_guess())
+    |> interact()
   end
 
   # @type state :: :initializing | :won | :lost | :good_guess | :bad_guess | :already_used
@@ -43,5 +43,22 @@ defmodule TextClient.Impl.Player do
 
   def feedback_for(%{game_state: :bad_guess}) do
     "That letter is not in the word. Try again."
+  end
+
+  def current_word(tally) do
+    [
+      "Word so far: ",
+      tally.letters |> Enum.join(" "),
+      "  turns left: ",
+      tally.turns_left |> to_string,
+      "  used so far: ",
+      tally.used |> Enum.join(", ")
+    ]
+  end
+
+  def get_guess() do
+    IO.gets("Next letter: ")
+    |> String.trim()
+    |> String.downcase()
   end
 end
