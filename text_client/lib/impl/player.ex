@@ -10,6 +10,7 @@ defmodule TextClient.Impl.Player do
     interact({game, tally})
   end
 
+  ######################################################################
   @spec interact(state) :: :ok
   def interact({_game, _tally = %{game_state: :won}}) do
     IO.puts("Congratulations! You won!")
@@ -28,6 +29,7 @@ defmodule TextClient.Impl.Player do
     |> interact()
   end
 
+  ########################################################################
   # @type state :: :initializing | :won | :lost | :good_guess | :bad_guess | :already_used
   def feedback_for(tally = %{game_state: :initializing}) do
     "Welcome! I am thinking of a #{tally.letters |> length()} letter word."
@@ -45,6 +47,7 @@ defmodule TextClient.Impl.Player do
     "That letter is not in the word. Try again."
   end
 
+  ######################################################################
   def current_word(tally) do
     [
       "Word so far: ",
